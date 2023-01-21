@@ -1,0 +1,20 @@
+.analyser-node-view {
+    border: 1px solid #000;
+    border-radius: 3px;
+    background: white;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+
+    .label {
+        position: absolute;
+        top: 3px;
+        left: 5px;
+        color: white;
+        font-size: 12px;
+    }
+
+    .signal-view {
+        margin: -1px;
+    }
+}

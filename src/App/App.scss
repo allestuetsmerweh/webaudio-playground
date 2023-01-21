@@ -1,0 +1,17 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+.root, .app {
+    width: 100vw;
+    height: 100vh;
+}
+
+.app {
+    .columns {
+        display: flex;
+        flex-direction: row;
+        width:100%;
+    }
+}

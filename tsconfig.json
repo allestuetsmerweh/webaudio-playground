@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "checkJs": false,
+        "jsx": "react",
+        "lib": [
+            "es6",
+            "dom",
+            "es2015.promise"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noUnusedLocals": true,
+        "outDir": "./dist",
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "target": "es5"
+    },
+    "include": [
+        "./src/**/*",
+    ],
+    "exclude": ["node_modules"]
+}
