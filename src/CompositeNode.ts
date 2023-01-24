@@ -14,14 +14,24 @@ export abstract class CompositeNode<
         public readonly outputNode: OutputNode,
     ) {}
 
-    addEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions | undefined): void {
-        throw new Error("Method not implemented.");
+    addEventListener(
+        _type: string,
+        _callback: EventListenerOrEventListenerObject | null,
+        _options?: boolean | AddEventListenerOptions | undefined,
+    ): void {
+        throw new Error('Method not implemented.');
     }
-    dispatchEvent(event: Event): boolean {
-        throw new Error("Method not implemented.");
+
+    dispatchEvent(_event: Event): boolean {
+        throw new Error('Method not implemented.');
     }
-    removeEventListener(type: string, callback: EventListenerOrEventListenerObject | null, options?: boolean | EventListenerOptions | undefined): void {
-        throw new Error("Method not implemented.");
+
+    removeEventListener(
+        _type: string,
+        _callback: EventListenerOrEventListenerObject | null,
+        _options?: boolean | EventListenerOptions | undefined,
+    ): void {
+        throw new Error('Method not implemented.');
     }
 }
 

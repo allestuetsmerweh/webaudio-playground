@@ -21,17 +21,17 @@ export class EqualizerNode extends CompositeNode<GainNode, GainNode> {
         this.setFrequencies(DEFAULT_FREQUENCIES);
     }
 
-    setFrequencies(newFrequencies: number[]) {
+    setFrequencies(newFrequencies: number[]): void {
         disconnect(this.inputNode);
-        this.filterNodes.map(filterNode => {
+        this.filterNodes.map((filterNode) => {
             disconnect(filterNode);
         });
 
         this.frequencies = newFrequencies;
-        this.filterNodes = this.frequencies.map(frequency => {
+        this.filterNodes = this.frequencies.map((frequency) => {
             const filterNode = this.context.createBiquadFilter();
             filterNode.frequency.value = frequency;
-            filterNode.type = "peaking";
+            filterNode.type = 'peaking';
             filterNode.gain.value = 0;
             return filterNode;
         });
@@ -43,13 +43,13 @@ export class EqualizerNode extends CompositeNode<GainNode, GainNode> {
         connect(this.filterNodes[this.filterNodes.length - 1], this.outputNode);
     }
 
-    setValues(values: EqualizerSetting) {
+    setValues(values: EqualizerSetting): void {
         const numValues = values.length;
         const numFrequencies = this.filterNodes.length;
         if (numValues !== numFrequencies) {
             throw new Error(`EqualizerNode.setValues called with ${numValues} values, but we have ${numFrequencies} frequencies`);
         }
-        
+
         values.map((gain, index) => {
             this.filterNodes[index].gain.value = gain;
         });

@@ -1,5 +1,4 @@
 import React from 'react';
-import {Dialog} from 'primereact/dialog';
 import ReactFlow, {
     MiniMap,
     Controls,
@@ -134,7 +133,6 @@ const initialEdges: Edge<unknown>[] = [
 ];
 
 export const Testbench = () => {
-    const [audioContextStarted, setAudioContextStarted] = React.useState<bool>(false);
     const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<unknown>(initialEdges);
 
@@ -179,18 +177,6 @@ export const Testbench = () => {
                 <Controls />
                 <Background />
             </ReactFlow>
-            <Dialog
-                header="Header"
-                visible={!audioContextStarted}
-                style={{ width: '50vw' }}
-                footer={'Footer'}
-                onHide={() => {
-                    audioContext.resume();
-                    setAudioContextStarted(true);
-                }}
-            >
-                <p>Please set your audio volume accordingly now!</p>
-            </Dialog>
         </div>
     </>);
 };

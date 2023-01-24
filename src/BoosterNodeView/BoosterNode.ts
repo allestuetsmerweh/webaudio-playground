@@ -20,7 +20,7 @@ export class BoosterNode extends CompositeNode<GainNode, GainNode> {
         this.filterNode.Q.value = 1;
     }
 
-    setIsActive(value: boolean) {
+    setIsActive(value: boolean): void {
         this.inputNode.gain.value = 0;
         this.outputNode.gain.value = 0;
         disconnect(this.inputNode);
@@ -38,16 +38,16 @@ export class BoosterNode extends CompositeNode<GainNode, GainNode> {
         }
     }
 
-    setOversample(value: OverSampleType) {
+    setOversample(value: OverSampleType): void {
         this.shaperNode.oversample = value;
     }
 
     makeDistortionCurve(k: number): Float32Array {
-        var n_samples = 44100; //65536; //22050; //44100;
-        var curve = new Float32Array(n_samples);
-        var deg = Math.PI / 180;
-        for (var i = 0; i < n_samples; i += 1) {
-            var x = i * 2 / n_samples - 1;
+        const n_samples = 44100; // 65536; //22050; //44100;
+        const curve = new Float32Array(n_samples);
+        const deg = Math.PI / 180;
+        for (let i = 0; i < n_samples; i += 1) {
+            const x = i * 2 / n_samples - 1;
             curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
         }
         return curve;
