@@ -12,7 +12,7 @@ const getConstraints = (deviceId?: string): MediaStreamConstraints => ({
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false,
-    } 
+    },
 });
 
 const getStream = async (deviceId?: string) => {
@@ -38,14 +38,14 @@ const getDevices = async () => {
 
 
 const convertToMono = (input: MediaStreamAudioSourceNode): ChannelMergerNode => {
-    var splitter = audioContext.createChannelSplitter(2);
-    var merger = audioContext.createChannelMerger(2);
+    const splitter = audioContext.createChannelSplitter(2);
+    const merger = audioContext.createChannelMerger(2);
 
     input.connect(splitter);
     splitter.connect(merger, 0, 0);
     splitter.connect(merger, 0, 1);
     return merger;
-}
+};
 
 
 export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> = ({data}) => {
@@ -58,11 +58,12 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
     const [selectedDeviceId, setSelectedDeviceId] = React.useState<string>();
     const [inputNode, setInputNode] = React.useState<AudioNode>();
 
-    const gotStream = React.useCallback(stream => {
+    const gotStream = React.useCallback((stream) => {
         if (!inputDevices) {
-            getDevices().then(devices => {
+            getDevices().then((devices) => {
                 setInputDevices(devices.filter(
-                    device => device.kind === 'audioinput'));
+                    (device) => device.kind === 'audioinput',
+                ));
             });
         }
 
@@ -78,7 +79,7 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
 
     React.useEffect(() => {
         gainNode.gain.value = gain;
-        
+
         getStream(selectedDeviceId).then(gotStream);
     }, [selectedDeviceId]);
 
@@ -94,7 +95,7 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
                 const value = (index + 1) / 10;
                 setGain(value);
                 gainNode.gain.value = value;
-            }, index*100);
+            }, index * 100);
         });
 
         setTimeout(() => {
@@ -115,7 +116,7 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
                         setSelectedDeviceId(newDeviceId);
                     }}
                 >
-                    {inputDevices.map(device => (<option value={device.deviceId}>{device.label}</option>))}
+                    {inputDevices.map((device) => (<option value={device.deviceId}>{device.label}</option>))}
                 </select>
             </td>
         </tr>

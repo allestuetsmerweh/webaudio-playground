@@ -9,10 +9,37 @@ interface SignalViewProps {
     noWaveform?: boolean;
 }
 
-export const SignalView = (props: SignalViewProps) => {
+export const SignalView = (props: SignalViewProps): React.ReactElement => {
     const canvas = React.useRef<HTMLCanvasElement>(null);
 
     const requestRef = React.useRef<number>();
+
+    const drawSpectrum = (ctx: CanvasRenderingContext2D, analyser: AnalyserNode) => {
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(data);
+        ctx.fillStyle = 'rgb(0,0,0)';
+        for (let i = 0; i < props.width; i++) {
+            const value = data[i] * props.height / 256;
+            ctx.fillRect(i, props.height - value, 1, value);
+        }
+    };
+
+    const drawWaveform = (ctx: CanvasRenderingContext2D, analyser: AnalyserNode) => {
+        const data = new Uint8Array(props.width);
+        analyser.getByteTimeDomainData(data);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'lightBlue';
+
+        ctx.beginPath();
+        ctx.moveTo(0, props.height / 2);
+        for (let i = 0; i < data.length; i++) {
+            const value = data[i] * props.height / 256;
+            ctx.lineTo(i, value);
+        }
+        ctx.lineTo(props.width, props.height / 2);
+        ctx.stroke();
+    };
 
     const draw = () => {
         const ctx = canvas.current?.getContext('2d');
@@ -32,33 +59,6 @@ export const SignalView = (props: SignalViewProps) => {
 
         requestRef.current = requestAnimationFrame(draw);
     };
-
-    const drawSpectrum = (ctx: CanvasRenderingContext2D, analyser: AnalyserNode) => {
-        const data = new Uint8Array(analyser.frequencyBinCount);            
-        analyser.getByteFrequencyData(data);
-        ctx.fillStyle = 'rgb(0,0,0)';
-        for (let i=0; i<props.width; i++) {
-            const value = data[i] * props.height / 256;
-            ctx.fillRect(i, props.height-value, 1, value);
-        }
-    }
-
-    const drawWaveform = (ctx: CanvasRenderingContext2D, analyser: AnalyserNode) => {
-        const data = new Uint8Array(props.width);
-        analyser.getByteTimeDomainData(data);
-
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'lightBlue';
-
-        ctx.beginPath();
-        ctx.moveTo(0, props.height / 2);
-        for(var i = 0; i < data.length; i++) {
-            const value = data[i] * props.height / 256;
-            ctx.lineTo(i, value);
-        }
-        ctx.lineTo(props.width, props.height / 2);
-        ctx.stroke();
-    }
 
     React.useEffect(() => {
         requestRef.current = requestAnimationFrame(draw);

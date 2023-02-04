@@ -7,7 +7,7 @@ import './AnalyserNodeView.scss';
 
 export const AnalyserNodeView: React.FunctionComponent<NodeProps<NodeData>> = ({data}) => {
     const analyser = data.audioNode as AnalyserNode;
-    
+
     return (
         <>
             <Handle type="target" position={Position.Top} />

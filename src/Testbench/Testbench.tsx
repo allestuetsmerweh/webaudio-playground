@@ -19,45 +19,46 @@ import {TonestackNode} from '../TonestackNodeView/TonestackNode';
 import {TonestackNodeView} from '../TonestackNodeView/TonestackNodeView';
 import {EqualizerNode} from '../EqualizerNodeView/EqualizerNode';
 import {EqualizerNodeView} from '../EqualizerNodeView/EqualizerNodeView';
+import {PitchDetectNodeView} from '../PitchDetectNodeView/PitchDetectNodeView';
 import {AudioNodeOrComposite, connect, disconnect} from '../CompositeNode';
 
 import 'reactflow/dist/style.css';
 import './Testbench.scss';
 
-const getWhiteNoise = () => {
-    const bufferSize = 2 * audioContext.sampleRate,
-    noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate),
-    output = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-        output[i] = Math.random() * 2 - 1;
-    }
+// const getWhiteNoise = () => {
+//     const bufferSize = 2 * audioContext.sampleRate,
+//         noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate),
+//         output = noiseBuffer.getChannelData(0);
+//     for (let i = 0; i < bufferSize; i++) {
+//         output[i] = Math.random() * 2 - 1;
+//     }
 
-    const whiteNoise = audioContext.createBufferSource();
-    whiteNoise.buffer = noiseBuffer;
-    whiteNoise.loop = true;
-    whiteNoise.start(0);
-    return whiteNoise;
-};
+//     const whiteNoise = audioContext.createBufferSource();
+//     whiteNoise.buffer = noiseBuffer;
+//     whiteNoise.loop = true;
+//     whiteNoise.start(0);
+//     return whiteNoise;
+// };
 
-const getAudioSweepOscillator = () => {
-    const oscillator = audioContext.createOscillator();
+// const getAudioSweepOscillator = () => {
+//     const oscillator = audioContext.createOscillator();
 
-    oscillator.type = 'sine';
-    let frequency = 440; // value in hertz
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.start();
+//     oscillator.type = 'sine';
+//     let frequency = 440; // value in hertz
+//     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+//     oscillator.start();
 
-    setInterval(() => {
-        if (frequency > 10000) {
-            frequency = 55;
-        } else {
-            frequency = frequency * Math.pow(2, 1/12);
-        }
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    }, 250);
+//     setInterval(() => {
+//         if (frequency > 10000) {
+//             frequency = 55;
+//         } else {
+//             frequency = frequency * Math.pow(2, 1 / 12);
+//         }
+//         oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+//     }, 250);
 
-    return oscillator;
-};
+//     return oscillator;
+// };
 
 // const getPinkNoise = () => {
 //     const bufferSize = 4096;
@@ -93,6 +94,7 @@ const initialNodes: Node<NodeData>[] = [
     // {id: 'sweepAnalyser', position: {x: 500, y: 100}, type: 'analyser', data: {label: 'Audio Frequency Sweep Analyser', audioNode: audioContext.createAnalyser()}},
     {id: 'inputStream', position: {x: 250, y: 150}, type: 'inputStream', data: {label: 'Device Input', audioNode: audioContext.createGain()}},
     {id: 'inputStreamAnalyser', position: {x: 550, y: 150}, type: 'analyser', data: {label: 'Device Input Analyser', audioNode: audioContext.createAnalyser()}},
+    {id: 'inputStreamPitchDetect', position: {x: 0, y: 150}, type: 'pitchDetect', data: {label: 'Pitch Detect', audioNode: audioContext.createAnalyser()}},
 
     {id: 'booster', position: {x: 250, y: 300}, type: 'booster', data: {label: 'Booster', audioNode: new BoosterNode(audioContext)}},
     {id: 'boosterAnalyser', position: {x: 550, y: 300}, type: 'analyser', data: {label: 'Booster Analyser', audioNode: audioContext.createAnalyser()}},
@@ -105,16 +107,17 @@ const initialNodes: Node<NodeData>[] = [
 
     // {id: 'biquadFilter', position: {x: 250, y: 300}, type: 'biquadFilter', data: {label: 'Biquad Filter', audioNode: audioContext.createBiquadFilter()}},
     // {id: 'biquadFilterAnalyser', position: {x: 250, y: 500}, type: 'analyser', data: {label: 'Biquad Filter Analyser', audioNode: audioContext.createAnalyser()}},
-    
+
     {id: 'output', position: {x: 250, y: 900}, type: 'output', data: {label: 'Audio Output', audioNode: audioContext.destination}},
 ];
-  
+
 const initialEdges: Edge<unknown>[] = [
     // {id: 'noiseAnalyser', source: 'whiteNoise', target: 'whiteNoiseAnalyser'},
     // {id: 'noiseBiquad', source: 'whiteNoise', target: 'biquadFilter'},
     // {id: 'sweepAnalyser', source: 'sweep', target: 'sweepAnalyser'},
     // {id: 'sweepBiquad', source: 'sweep', target: 'biquadFilter'},
     {id: 'inputStreamAnalyser', source: 'inputStream', target: 'inputStreamAnalyser'},
+    {id: 'inputStreamPitchDetect', source: 'inputStream', target: 'inputStreamPitchDetect'},
 
     {id: 'inputStreamBooster', source: 'inputStream', target: 'booster'},
     {id: 'boosterAnalyser', source: 'booster', target: 'boosterAnalyser'},
@@ -132,8 +135,8 @@ const initialEdges: Edge<unknown>[] = [
     // {id: 'biquadOutput', source: 'biquadFilter', target: 'output'},
 ];
 
-export const Testbench = () => {
-    const [nodes, setNodes, onNodesChange] = useNodesState<NodeData>(initialNodes);
+export const Testbench = (): React.ReactElement => {
+    const [nodes, _setNodes, onNodesChange] = useNodesState<NodeData>(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState<unknown>(initialEdges);
 
     const nodeTypes = React.useMemo(() => ({
@@ -143,20 +146,21 @@ export const Testbench = () => {
         booster: BoosterNodeView,
         tonestack: TonestackNodeView,
         equalizer: EqualizerNodeView,
+        pitchDetect: PitchDetectNodeView,
     }), []);
-  
+
     const onConnect = React.useCallback(
         (params) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
+        [setEdges],
     );
 
     React.useEffect(() => {
         const nodeById: {[id: string]: Node<NodeData>} = {};
-        nodes.map(node => {
+        nodes.map((node) => {
             disconnect(node.data.audioNode);
             nodeById[node.id] = node;
         });
-        edges.map(edge => {
+        edges.map((edge) => {
             const sourceAudioNode = nodeById[edge.source].data.audioNode;
             const targetAudioNode = nodeById[edge.target].data.audioNode;
             connect(sourceAudioNode, targetAudioNode);
