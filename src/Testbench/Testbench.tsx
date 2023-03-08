@@ -13,8 +13,10 @@ import {audioContext} from '../audioContext';
 import {AnalyserNodeView} from '../AnalyserNodeView/AnalyserNodeView';
 import {BiquadFilterNodeView} from '../BiquadFilterNodeView/BiquadFilterNodeView';
 import {InputStreamNodeView} from '../InputStreamNodeView/InputStreamNodeView';
-import {BoosterNode} from '../BoosterNodeView/BoosterNode';
+// import {BoosterNode} from '../BoosterNodeView/BoosterNode';
 import {BoosterNodeView} from '../BoosterNodeView/BoosterNodeView';
+import {DistortionNode} from '../DistortionNodeView/DistortionNode';
+import {DistortionNodeView} from '../DistortionNodeView/DistortionNodeView';
 import {TonestackNode} from '../TonestackNodeView/TonestackNode';
 import {TonestackNodeView} from '../TonestackNodeView/TonestackNodeView';
 import {EqualizerNode} from '../EqualizerNodeView/EqualizerNode';
@@ -96,19 +98,22 @@ const initialNodes: Node<NodeData>[] = [
     {id: 'inputStreamAnalyser', position: {x: 550, y: 150}, type: 'analyser', data: {label: 'Device Input Analyser', audioNode: audioContext.createAnalyser()}},
     {id: 'inputStreamPitchDetect', position: {x: 0, y: 150}, type: 'pitchDetect', data: {label: 'Pitch Detect', audioNode: audioContext.createAnalyser()}},
 
-    {id: 'booster', position: {x: 250, y: 300}, type: 'booster', data: {label: 'Booster', audioNode: new BoosterNode(audioContext)}},
-    {id: 'boosterAnalyser', position: {x: 550, y: 300}, type: 'analyser', data: {label: 'Booster Analyser', audioNode: audioContext.createAnalyser()}},
+    // {id: 'booster', position: {x: 250, y: 300}, type: 'booster', data: {label: 'Booster', audioNode: new BoosterNode(audioContext)}},
+    // {id: 'boosterAnalyser', position: {x: 550, y: 300}, type: 'analyser', data: {label: 'Booster Analyser', audioNode: audioContext.createAnalyser()}},
 
-    {id: 'tonestack', position: {x: 250, y: 450}, type: 'tonestack', data: {label: 'Tonestack', audioNode: new TonestackNode(audioContext)}},
-    {id: 'tonestackAnalyser', position: {x: 550, y: 450}, type: 'analyser', data: {label: 'Tonestack Analyser', audioNode: audioContext.createAnalyser()}},
+    {id: 'distortion', position: {x: 250, y: 300}, type: 'distortion', data: {label: 'Distortion', audioNode: new DistortionNode(audioContext)}},
+    {id: 'distortionAnalyser', position: {x: 550, y: 300}, type: 'analyser', data: {label: 'Distortion Analyser', audioNode: audioContext.createAnalyser()}},
 
-    {id: 'equalizer', position: {x: 250, y: 650}, type: 'equalizer', data: {label: 'Equalizer', audioNode: new EqualizerNode(audioContext)}},
-    {id: 'equalizerAnalyser', position: {x: 550, y: 650}, type: 'analyser', data: {label: 'Equalizer Analyser', audioNode: audioContext.createAnalyser()}},
+    {id: 'tonestack', position: {x: 250, y: 500}, type: 'tonestack', data: {label: 'Tonestack', audioNode: new TonestackNode(audioContext)}},
+    {id: 'tonestackAnalyser', position: {x: 550, y: 500}, type: 'analyser', data: {label: 'Tonestack Analyser', audioNode: audioContext.createAnalyser()}},
+
+    {id: 'equalizer', position: {x: 250, y: 700}, type: 'equalizer', data: {label: 'Equalizer', audioNode: new EqualizerNode(audioContext)}},
+    {id: 'equalizerAnalyser', position: {x: 550, y: 700}, type: 'analyser', data: {label: 'Equalizer Analyser', audioNode: audioContext.createAnalyser()}},
 
     // {id: 'biquadFilter', position: {x: 250, y: 300}, type: 'biquadFilter', data: {label: 'Biquad Filter', audioNode: audioContext.createBiquadFilter()}},
     // {id: 'biquadFilterAnalyser', position: {x: 250, y: 500}, type: 'analyser', data: {label: 'Biquad Filter Analyser', audioNode: audioContext.createAnalyser()}},
 
-    {id: 'output', position: {x: 250, y: 900}, type: 'output', data: {label: 'Audio Output', audioNode: audioContext.destination}},
+    {id: 'output', position: {x: 250, y: 950}, type: 'output', data: {label: 'Audio Output', audioNode: audioContext.destination}},
 ];
 
 const initialEdges: Edge<unknown>[] = [
@@ -119,10 +124,13 @@ const initialEdges: Edge<unknown>[] = [
     {id: 'inputStreamAnalyser', source: 'inputStream', target: 'inputStreamAnalyser'},
     {id: 'inputStreamPitchDetect', source: 'inputStream', target: 'inputStreamPitchDetect'},
 
-    {id: 'inputStreamBooster', source: 'inputStream', target: 'booster'},
-    {id: 'boosterAnalyser', source: 'booster', target: 'boosterAnalyser'},
+    // {id: 'inputStreamBooster', source: 'inputStream', target: 'booster'},
+    // {id: 'boosterAnalyser', source: 'booster', target: 'boosterAnalyser'},
 
-    {id: 'boosterTonestack', source: 'booster', target: 'tonestack'},
+    {id: 'inputStreamDistortion', source: 'inputStream', target: 'distortion'},
+    {id: 'distortionAnalyser', source: 'distortion', target: 'distortionAnalyser'},
+
+    {id: 'distortionTonestack', source: 'distortion', target: 'tonestack'},
     {id: 'tonestackAnalyser', source: 'tonestack', target: 'tonestackAnalyser'},
 
     {id: 'tonestackEqualizer', source: 'tonestack', target: 'equalizer'},
@@ -140,13 +148,14 @@ export const Testbench = (): React.ReactElement => {
     const [edges, setEdges, onEdgesChange] = useEdgesState<unknown>(initialEdges);
 
     const nodeTypes = React.useMemo(() => ({
-        inputStream: InputStreamNodeView,
         analyser: AnalyserNodeView,
         biquadFilter: BiquadFilterNodeView,
         booster: BoosterNodeView,
-        tonestack: TonestackNodeView,
+        distortion: DistortionNodeView,
         equalizer: EqualizerNodeView,
+        inputStream: InputStreamNodeView,
         pitchDetect: PitchDetectNodeView,
+        tonestack: TonestackNodeView,
     }), []);
 
     const onConnect = React.useCallback(

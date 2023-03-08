@@ -77,6 +77,36 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
         setInputNode(newInputNode);
     }, [inputDevices, inputNode]);
 
+    const requestPedals = async () => {
+        const midi = await navigator.requestMIDIAccess();
+        midi.inputs.forEach((device, id) => {
+            device.onmidimessage = (message) => {
+                console.log(`Message at ${message.timeStamp} [${message.data.length}]`);
+                console.log(Array.from(message.data)
+                    .map((char) => char.toString(16).padStart(2, '0'))
+                    .join(''));
+            };
+            console.log(
+                `ID: ${id}` +
+                `Input port [type:'${device.type}']` +
+                ` id:'${device.id}'` +
+                ` manufacturer:'${device.manufacturer}'` +
+                ` name:'${device.name}'` +
+                ` version:'${device.version}'`,
+            );
+        });
+        midi.outputs.forEach((device, id) => {
+            console.log(
+                `ID: ${id}` +
+                `Output port [type:'${device.type}']` +
+                ` id:'${device.id}'` +
+                ` manufacturer:'${device.manufacturer}'` +
+                ` name:'${device.name}'` +
+                ` version:'${device.version}'`,
+            );
+        });
+    };
+
     React.useEffect(() => {
         gainNode.gain.value = gain;
 
@@ -151,6 +181,7 @@ export const InputStreamNodeView: React.FunctionComponent<NodeProps<NodeData>> =
                     onHide={() => {
                         audioContext.resume();
                         setAudioContextStarted(true);
+                        requestPedals();
                     }}
                 >
                     <p>Close this dialog when you're ready to start.</p>
